@@ -19,31 +19,6 @@ typedef struct Sach
     long gia_tien;
     int so_luong_ban;
 };
-
-struct SinhNhat
-{
-    int ngay;
-    int thang;
-};
-//-lich su mua hang
-
-struct LichSuMuaHang
-{
-
-};
-
-//-lich su mua hang
-struct KhachHang
-{
-    char ho_ten[MAX_NAME];
-    char sdt[10];
-    char dia_chi[MAX_ADD];
-    struct SinhNhat sinh_nhat;
-    int tuoi;
-    struct LichSuMuaHang lsmh;
-    char phan_hoi[MAX_PH];
-};
-
 //list sach
 struct Node_Sach
 {
@@ -91,16 +66,84 @@ void taoList(struct list_sach *l){
     (*l).pTail = NULL;
 }
 //--list sach
+struct list_sach listSach;
+//-----------lich su mua hang
 
-//--list khach
+struct LichSuMuaHang
+{
+    struct Node_LichSuMuaHang *pHead;
+    struct Node_LichSuMuaHang *pTail;
+};
+
+struct Node_LichSuMuaHang
+{
+    char id_sach[MAX_ID];
+    char ten_sach[MAX_NAME];
+    int so_luong_ban;
+    struct Node_Sach *pNext;
+};
+
+struct Node_LichSuMuaHang* taoNodeLichSu(struct list_sach *list){
+    char key;
+    struct Node_LichSuMuaHang *p = (struct Node_LichSuMuaHang*)malloc(sizeof(struct Node_LichSuMuaHang));
+    printf("\nnhap lich su mua hang (yeu cau ban nhap chinh xac id sach): \n");
+    fflush(stdin);
+    printf("\nnhap id: ");
+    fgets(p->id_sach,sizeof(p->id_sach),stdin);
+    bool check = false;
+    struct Node_Sach* p1 = list->pHead;
+    do{
+        if(strcmpi(p->id_sach,p1->data.id_sach)==0){
+            strcpy(p->ten_sach,p1->data.ten_sach);
+            printf("nhap so luong mua: ");
+            scanf("%d",&p->so_luong_ban);
+            p1->data.so_luong_ban += p->so_luong_ban;
+            check = true;
+            fflush(stdin);
+            break;
+        }
+        p1=p1->pNext;
+    }while(p1!=NULL);
+    if(!check){
+        printf("\nid sach khong khop");
+    }
+    p->pNext = NULL;
+    return p;
+}
+
+void taoLichSuMuahang(struct LichSuMuaHang *l){
+    (*l).pHead = NULL;
+    (*l).pTail = NULL;
+}
+
+//---------------lich su mua hang
+struct SinhNhat
+{
+    int ngay;
+    int thang;
+};
+
+struct KhachHang
+{
+    char ho_ten[MAX_NAME];
+    char sdt[10];
+    char dia_chi[MAX_ADD];
+    struct SinhNhat sinh_nhat;
+    int tuoi;
+    struct LichSuMuaHang lsmh;
+    char phan_hoi[MAX_PH];
+};
+
+//-------------------------------------list khach
 struct Node_Khach
 {
     struct KhachHang data;
     struct Node_Khach *pNext;
 };
 
-struct Sach themDataKhach(){
+struct KhachHang themDataKhach(){
     struct KhachHang temp;
+    char key0;
     fflush(stdin);
     printf("nhap ten khach hang: ");
     fgets(temp.ho_ten,sizeof(temp.ho_ten),stdin);
@@ -111,17 +154,39 @@ struct Sach themDataKhach(){
     fgets(temp.dia_chi,sizeof(temp.dia_chi),stdin);
     fflush(stdin);
     printf("Nhap sinh nhat khach: ");
-    printf("nhap ngay sinh: "); scanf("%d",&temp.sinh_nhat.ngay);
-    printf("nhap thang sinh: "); scanf("%d",&temp.sinh_nhat.thang);
+    printf("nhap ngay sinh: "); scanf("%d",&temp.sinh_nhat.ngay); fflush(stdin);
+    printf("nhap thang sinh: "); scanf("%d",&temp.sinh_nhat.thang); fflush(stdin);
     printf("nhap tuoi: ");
     scanf("%d",&temp.tuoi);
     fflush(stdin);
     printf("nhap phan hoi: ");
     fgets(temp.phan_hoi,sizeof(temp.phan_hoi),stdin);
+    fflush(stdin);
+    printf("khach hang co lich su mua hang khong? [y/n]");
+    key0 = getch();
+    if(key0 == 'y'){
+        struct LichSuMuaHang temp1;
+        taoLichSuMuahang(&temp1);
+        do{
+            printf("\n-----------------------\n");
+            printf("\nnhap lich su mua hang: \n");
+        if(temp1.pHead==NULL){
+            temp1.pHead = taoNodeLichSu(&listSach);
+            temp1.pHead->pNext = temp1.pTail;
+        }else{
+            struct Node_LichSuMuaHang* temp2 = taoNodeLichSu(&listSach);
+            temp1.pTail = temp2;
+            temp1.pHead->pNext = temp2;
+        }
+        printf("\nban co muon nhap them lich su mua hang nua khong? [y/n]");
+        key0 = getch();
+    }while(key0!='n');
+    temp.lsmh = temp1;
+    }
     return temp;
 };
 
-struct Node_Khach* taoNode(){
+struct Node_Khach* taoNodeKhach(){
     struct Node_Khach *p = (struct Node_Khach*)malloc(sizeof(struct Node_Khach));
     p->data = themDataKhach();
     p->pNext = NULL;
@@ -132,7 +197,12 @@ struct list_khach{
     struct Node_Khach *pHead;
     struct Node_Khach *pTail;
 };
-//--list khach
+
+void taoListKhach(struct list_khach *l){
+    (*l).pHead = NULL;
+    (*l).pTail = NULL;
+}
+//----------------------------list khach
 
 void menu(){
     printf("\t\tMenu tinh nang chuong trinh:\n");
@@ -149,8 +219,11 @@ int main()
 {
     char key0;
     char key1;
-    struct list_sach listSach;
+    char key2;
     taoList(&listSach);
+    struct list_khach listKhach;
+    taoListKhach(&listKhach);
+
     printf("khoi tao du lieu sach...\n");
     do{
         printf("\n-----------------------\n");
@@ -166,6 +239,23 @@ int main()
         printf("ban co muon nhap them nua khong? [y/n]");
         key0 = getch();
     }while(key0!='n');
+    printf("\n-----------------------\n");
+    printf("\nkhoi tao du lieu khach hang...\n");
+    do{
+        printf("\n-----------------------\n");
+        printf("\nnhap du lieu khach hang: \n");
+        if(listKhach.pHead==NULL){
+            listKhach.pHead = taoNodeKhach();
+            listKhach.pHead->pNext = listKhach.pTail;
+        }else{
+            struct Node_Khach* temp = taoNodeKhach();
+            listKhach.pTail = temp;
+            listKhach.pHead->pNext = temp;
+        }
+        printf("\nban co muon nhap them khach hang nua khong? [y/n]");
+        key0 = getch();
+    }while(key0!='n');
+    printf("\n-----------------------\n");
     Sleep(500);
     do{
         system("cls");
@@ -276,13 +366,35 @@ int main()
             }
         case '5':
             {
+                printf("\n----------------------------------------------------------------------------\n");
+                printf("danh sach khach hang:\n");
+                struct Node_Khach* p = listKhach.pHead;
+                do{
+                    printf("-----------\n");
+                    printf("Ho ten: %s\n",p->data.ho_ten);
+                    printf("Dia chi: %s\n",p->data.dia_chi);
+                    printf("So dien thoai: %s\n",p->data.sdt);
+                    printf("Sinh nhat: %d/%d\n",p->data.sinh_nhat.ngay,p->data.sinh_nhat.thang);
+                    printf("Tuoi: %d\n",p->data.tuoi);
+                    printf("Phan hoi: %s\n",p->data.phan_hoi);
+                    printf("Lich su mua hang: \n");
+                    struct Node_LichSuMuaHang *p1 = p->data.lsmh.pHead;
+                    do{
+                        printf("- ID: %s\n",p1->id_sach);
+                        printf("- Ten sach: %s\n",p1->ten_sach);
+                        printf("- So luong: %d\n",p1->so_luong_ban);
+                        printf("-----------\n");
+                        p1=p1->pNext;
+                    }while(p1!=NULL);
+                    printf("-----------\n");
+                    p = p->pNext;
+                }while(p != NULL);
                 printf("----------------------------------------------------------------------------\n");
-
-                printf("----------------------------------------------------------------------------\n");
+                break;
             }
         }
-        printf("\nbam phim bat ki de tiep tuc\n");
-        char key2 = getch();
-    }while(key1!='6');
+        printf("\nbam phim bat ki de tiep tuc hoac bam 6 de thoat\n");
+        key2 = getch();
+    }while(key1!='6' && key2 != '6');
     printf("\nKET THUC CHUONG TRINH");
 }
