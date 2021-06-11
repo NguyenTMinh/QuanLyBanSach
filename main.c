@@ -172,11 +172,15 @@ struct KhachHang themDataKhach(){
             printf("\nnhap lich su mua hang: \n");
         if(temp1.pHead==NULL){
             temp1.pHead = taoNodeLichSu(&listSach);
-            temp1.pHead->pNext = temp1.pTail;
         }else{
             struct Node_LichSuMuaHang* temp2 = taoNodeLichSu(&listSach);
-            temp1.pTail = temp2;
-            temp1.pHead->pNext = temp2;
+            if(LichSuMuaHang.pTail == NULL){
+                LichSuMuaHang.pTail = temp;
+                LichSuMuaHang.pHead->pNext = temp;
+            }else{
+                LichSuMuaHang.pTail->pNext = temp;
+                LichSuMuaHang.pTail = temp;
+            }
         }
         printf("\nban co muon nhap them lich su mua hang nua khong? [y/n]");
         key0 = getch();
@@ -230,11 +234,15 @@ int main()
         printf("\nnhap du lieu sach: \n");
         if(listSach.pHead==NULL){
             listSach.pHead = taoNode();
-            listSach.pHead->pNext = listSach.pTail;
         }else{
             struct Node_Sach* temp = taoNode();
-            listSach.pTail = temp;
-            listSach.pHead->pNext = temp;
+            if(listSach.pTail == NULL){
+                listSach.pTail = temp;
+                listSach.pHead->pNext = temp;
+            }else{
+                listSach.pTail->pNext = temp;
+                listSach.pTail = temp;
+            }
         }
         printf("ban co muon nhap them nua khong? [y/n]");
         key0 = getch();
@@ -246,11 +254,16 @@ int main()
         printf("\nnhap du lieu khach hang: \n");
         if(listKhach.pHead==NULL){
             listKhach.pHead = taoNodeKhach();
-            listKhach.pHead->pNext = listKhach.pTail;
+
         }else{
             struct Node_Khach* temp = taoNodeKhach();
-            listKhach.pTail = temp;
-            listKhach.pHead->pNext = temp;
+            if(listKhach.pTail == NULL){
+                listKhach.pTail = temp;
+                listKhach.pHead->pNext = temp;
+            }else{
+                listKhach.pTail->pNext = temp;
+                listKhach.pTail = temp;
+            }
         }
         printf("\nban co muon nhap them khach hang nua khong? [y/n]");
         key0 = getch();
