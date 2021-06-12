@@ -174,12 +174,12 @@ struct KhachHang themDataKhach(){
             temp1.pHead = taoNodeLichSu(&listSach);
         }else{
             struct Node_LichSuMuaHang* temp2 = taoNodeLichSu(&listSach);
-            if(LichSuMuaHang.pTail == NULL){
-                LichSuMuaHang.pTail = temp;
-                LichSuMuaHang.pHead->pNext = temp;
+            if(temp1.pTail == NULL){
+                temp1.pTail = temp2;
+                temp1.pHead->pNext = temp2;
             }else{
-                LichSuMuaHang.pTail->pNext = temp;
-                LichSuMuaHang.pTail = temp;
+                temp1.pTail->pNext = temp2;
+                temp1.pTail = temp2;
             }
         }
         printf("\nban co muon nhap them lich su mua hang nua khong? [y/n]");
